@@ -38,6 +38,40 @@ p {
   font-size: 1.5rem;
 }
 
+.prompt-container {
+  padding: 0 2rem;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 4.5rem;
+  margin: 1.5rem 0;
+  @media (max-width: 600px) {
+    height: 13rem;
+  }
+}
+
+.loading-state::after {
+  content: "";
+  width: 3rem;
+  height: 3rem;
+  border: 0.5rem solid transparent;
+  border-top: 0.5rem solid #0070f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .action-container {
   display: flex;
   flex-direction: column;
@@ -82,10 +116,12 @@ button:hover {
 }
 
 button:disabled {
-  background-color: #eaeaea;
+  background-color: #0071f362;
   cursor: not-allowed;
+  color: #ffffff62;
 }
 
-.prompt-container {
-  padding: 0 2rem;
+/* KEEPS SPACE RESERVED IN DOM TO PREVENT JUMPINESS ON APPEARANCE */
+.validation-error {
+  min-height: 1.5rem; 
 }
