@@ -15,6 +15,8 @@ const Prompt = () => {
   const [showInputFields, setShowInputFields] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [hasReachedRateLimit, setHasReachedRateLimit] = useState<boolean>(false)
+  const [isTimedOut, setIsTimedOut] = useState<boolean>(false)
+  const [timeRemaining, setTimeRemaining] = useState<number>(30)
 
   const fetchPrompt = async (): Promise<void> => {
     if (validationError) setValidationError('')
@@ -30,30 +32,57 @@ const Prompt = () => {
 
     try {
       setIsLoading(true)
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        headers: {
+          'x-wpg-api-key': import.meta.env.VITE_WPG_API_KEY || ''
+        }
+      })
       const data = await response.json()
 
-      // intercept early if rate limited
+      // intercept early if rate limited by backend
       if (response.status === 429) {
         setIsLoading(false)
         setHasReachedRateLimit(true)
+        setPrompt('')
         setFetchError(data.error)
+        if (data.error.includes('Easy, eager writer')) {
+          setIsTimedOut(true)
+          startCountdown()
+        }
         return
       }
 
       // otherwise, set the prompt in state or set other error
       if (data.response) {
         setIsLoading(false)
+        setFetchError('')
         setPrompt(data.response)
       } else {
         setIsLoading(false)
+        setPrompt('')
         setFetchError(data.error)
       }
        
     } catch (error) {
       setIsLoading(false)
+      setPrompt('')
       setFetchError('Failed to fetch prompt. Please try again later.')
     }
+  }
+
+  const startCountdown = () => {
+    setTimeRemaining(30)
+    const countdownInterval = setInterval(() => {
+      setTimeRemaining(prevTime => {
+        if (prevTime <= 1) {
+          clearInterval(countdownInterval)
+          setIsTimedOut(false)
+          setHasReachedRateLimit(false)
+          return 0
+        }
+        return prevTime - 1
+      })
+    }, 1000)
   }
 
   useEffect(() => {
@@ -102,12 +131,13 @@ const Prompt = () => {
                 }
               }
             }}
-            disabled={hasReachedRateLimit}
+            disabled={hasReachedRateLimit || isTimedOut}
           >
             Fetch New Prompt
           </button>
           <div className='validation-error'>
-            {validationError && <span className='validation-error'>{validationError}</span>}
+            {validationError && <span>{validationError}</span>}
+            {hasReachedRateLimit && isTimedOut && <span>Try again in {timeRemaining} seconds.</span>}
           </div>
         </div>
       </div>
