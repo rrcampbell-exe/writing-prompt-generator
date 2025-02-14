@@ -122,6 +122,6 @@ button:disabled {
 }
 
 /* KEEPS SPACE RESERVED IN DOM TO PREVENT JUMPINESS ON APPEARANCE */
-.validation-error {
+.error-details {
   min-height: 1.5rem; 
 }

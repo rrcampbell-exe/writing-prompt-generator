@@ -135,9 +135,9 @@ const Prompt = () => {
           >
             Fetch New Prompt
           </button>
-          <div className='validation-error'>
+          <div className='error-details'>
             {validationError && <span>{validationError}</span>}
-            {hasReachedRateLimit && isTimedOut && <span>Try again in {timeRemaining} seconds.</span>}
+            {(hasReachedRateLimit && isTimedOut) && <span>Try again in {timeRemaining} seconds.</span>}
           </div>
         </div>
       </div>
