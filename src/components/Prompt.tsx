@@ -20,7 +20,7 @@ const Prompt = () => {
 
   const fetchPrompt = async (): Promise<void> => {
     if (validationError) setValidationError('')
-    const baseUrl = 'http://writing-prompt-generator-api.vercel.app/api/v1/prompts'
+    const baseUrl = 'https://writing-prompt-generator-api.vercel.app/api/v1/prompts'
     const formattedGenre = formatParams(genre)
     const formattedTheme = formatParams(theme)
     const params = {
